@@ -1,4 +1,4 @@
-# Workflow for deploying Jekyll to GitHub Pages with Staging and Production Environments
+# Workflow for deploying Jekyll to GitHub Pages with separate staging and production environments
 name: Deploy Jekyll with GitHub Pages Dependencies Preinstalled
 
 on:
@@ -50,7 +50,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-    # Dynamically set the environment based on the branch
+    # Explicitly set environments and URLs based on the branch
     environment:
       name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
-      url: ${{ github.ref_name == 'main' && github.event.repository.html_url || github.event.repository.html_url + '-staging' }}
+      url: ${{ github.ref_name == 'main' && 'https://gsriram7.github.io/MyFlashCards' || 'https://gsriram7.github.io/MyFlashCards-staging' }}
