@@ -1,18 +1,14 @@
-# Workflow for deploying Jekyll to GitHub Pages with staging and production environments
-
+# Workflow for deploying Jekyll to GitHub Pages with separate staging and production environments
 name: Deploy Jekyll with GitHub Pages Dependencies Preinstalled
 
 on:
-  # Trigger for the staging branch
+  # Trigger deployment for staging and production branches
   push:
     branches:
       - staging
-  # Trigger for the production branch
-  push:
-    branches:
       - main
 
-  # Allows you to manually run the workflow
+  # Allows manual execution of the workflow
   workflow_dispatch:
 
 permissions:
@@ -20,36 +16,41 @@ permissions:
   pages: write
   id-token: write
 
+# Ensure only one deployment runs at a time
 concurrency:
-  group: "pages"
+  group: ${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # Build job for both staging and production
+  # Build job for Jekyll
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
-      - name: Upload artifact
+
+      - name: Upload build artifact
         uses: actions/upload-pages-artifact@v3
 
   # Deploy job for GitHub Pages
   deploy:
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-    # Configure environments dynamically based on the branch
+
+    # Explicitly set environments and URLs based on the branch
     environment:
       name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
-      url: ${{ github.ref_name == 'main' && github.event.repository.html_url || github.event.repository.html_url + '-staging' }}
+      url: ${{ github.ref_name == 'main' && 'https://gsriram7.github.io/MyFlashCards' || 'https://gsriram7.github.io/MyFlashCards-staging' }}
