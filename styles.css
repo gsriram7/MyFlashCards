@@ -1,0 +1,467 @@
+:root {
+    --primary-color: #4CAF50;
+    --secondary-color: #2196F3;
+    --error-color: #f44336;
+    --success-color: #4CAF50;
+    --warning-color: #ff9800;
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px var(--shadow-color);
+}
+
+/* Search */
+.search-container {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto 20px;
+}
+
+#search {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+#search:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+#autocomplete-results {
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    z-index: 1000;
+}
+
+.search-result {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-result:hover {
+    background-color: rgba(33, 150, 243, 0.1);
+}
+
+/* Filters */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.filter-group select {
+    width: 200px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: white;
+}
+
+.filter-group select[multiple] {
+    height: 100px;
+}
+
+/* Mode Selection */
+.mode-selection {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.mode-selection button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.mode-selection button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+/* Flashcard Container */
+#flashcard-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Timer */
+.timer-container {
+    background: white;
+    padding: 10px 15px;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#timer-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+#timer-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+/* Progress Bar */
+.progress-container {
+    flex-grow: 1;
+    margin-right: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: var(--border-color);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+
+/* Flashcard */
+.flashcard-wrapper {
+    perspective: 1000px;
+    margin: 20px 0;
+}
+
+.flashcard {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    padding: 30px;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+.front {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.back {
+    transform: rotateY(180deg);
+    overflow-y: auto;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: gold;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.problem-link-container {
+    margin-top: 20px;
+}
+
+.leetcode-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 2px solid var(--secondary-color);
+    border-radius: 25px;
+    transition: all 0.3s;
+}
+
+.leetcode-link:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.flip-instruction {
+    position: absolute;
+    bottom: 20px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Problem Details */
+.problem-details {
+    margin-bottom: 20px;
+}
+
+.problem-details p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+/* Notes Section */
+.notes-section {
+    margin-top: 20px;
+}
+
+#problem-notes {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.save-notes-btn {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.save-notes-btn:hover {
+    background-color: #388E3C;
+}
+
+/* Evaluation Buttons */
+.evaluation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.evaluation-buttons button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.evaluation-buttons .easy {
+    background-color: var(--success-color);
+}
+
+.evaluation-buttons .medium {
+    background-color: var(--warning-color);
+}
+
+.evaluation-buttons .hard {
+    background-color: var(--error-color);
+}
+
+.evaluation-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+/* Menu Button */
+.menu-button {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 24px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menu-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+/* Custom Form */
+.custom-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.custom-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .flashcard {
+        height: 300px;
+    }
+
+    .evaluation-buttons {
+        flex-direction: column;
+    }
+
+    .evaluation-buttons button {
+        width: 100%;
+    }
+
+    .top-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .timer-container {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .progress-container {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .front, .back {
+        padding: 15px;
+    }
+
+    .flashcard {
+        height: 250px;
+    }
+
+    .mode-selection button {
+        width: 100%;
+    }
+}

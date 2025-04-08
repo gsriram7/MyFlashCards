@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Flashcards</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Landing Page -->
+        <div id="landing-page">
+            <h1>LeetCode Flashcards</h1>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Search problems...">
+                <div id="autocomplete-results" class="hidden"></div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label for="difficulty">Difficulty:</label>
+                    <select id="difficulty" multiple>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="frequency">Frequency:</label>
+                    <select id="frequency" multiple>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="hardness">Hardness Rating:</label>
+                    <select id="hardness" multiple>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Mode Selection -->
+            <div class="mode-selection">
+                <button class="mode-btn" data-mode="random">Random Flashcards</button>
+                <button class="customize-btn">Custom Flashcards</button>
+                <button class="mode-btn" data-mode="mistakes">Mistakes Flashcards</button>
+                <button class="favorites-btn">Favorites</button>
+                <button class="report-btn">Show Report</button>
+            </div>
+        </div>
+
+        <!-- Flashcard Container -->
+        <div id="flashcard-container" class="hidden">
+            <div class="top-controls">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">0 / 0 Questions</div>
+                </div>
+
+                <div class="timer-container">
+                    <span id="timer-display">00:00</span>
+                    <button id="timer-toggle">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flashcard-wrapper">
+                <div class="flashcard">
+                    <div class="front">
+                        <button class="favorite-btn">
+                            <i class="far fa-star"></i>
+                        </button>
+                        <h2 id="problem-name"></h2>
+                        <div class="problem-link-container">
+                            <a id="problem-link" target="_blank" class="leetcode-link">
+                                <i class="fas fa-external-link-alt"></i> View on LeetCode
+                            </a>
+                        </div>
+                        <div class="flip-instruction">
+                            <i class="fas fa-sync"></i> Click to flip
+                        </div>
+                    </div>
+                    <div class="back">
+                        <div class="problem-details">
+                            <p><strong>Answer:</strong> <span id="answer"></span></p>
+                            <p><strong>Complexity:</strong> <span id="complexity"></span></p>
+                            <p><strong>Frequency:</strong> <span id="freq"></span></p>
+                            <p><strong>Hardness:</strong> <span id="hardness-rating"></span>/10</p>
+                        </div>
+                        <div class="notes-section" onclick="event.stopPropagation()">
+                            <textarea id="problem-notes" placeholder="Add your notes here..."></textarea>
+                            <button class="save-notes-btn">Save Notes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="evaluation-buttons">
+                <button class="easy">
+                    <i class="fas fa-check"></i> Got it!
+                </button>
+                <button class="medium">
+                    <i class="fas fa-sync"></i> Need Practice
+                </button>
+                <button class="hard">
+                    <i class="fas fa-times"></i> Review Again
+                </button>
+            </div>
+
+            <button class="menu-button">
+                <i class="fas fa-home"></i> Return to Menu
+            </button>
+        </div>
+
+        <!-- Report Container -->
+        <div id="report-container" class="hidden">
+            <h2>Your Progress Report</h2>
+            <div id="stats-container"></div>
+            <button class="menu-button">
+                <i class="fas fa-home"></i> Return to Menu
+            </button>
+        </div>
+
+        <!-- Custom Form Container (initially hidden) -->
+        <div id="custom-form-container" class="hidden">
+            <div class="custom-form">
+                <h2>Customize Your Practice</h2>
+                <!-- Form content will be dynamically added -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
