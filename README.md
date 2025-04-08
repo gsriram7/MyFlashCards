@@ -1,6 +1,3 @@
-Certainly! Here's the updated `README.md` file with the requested changes:
-
-```markdown
 # MyFlashCards
 
 A web-based flashcard application for practicing LeetCode problems, built with vanilla JavaScript. Study, track progress, and maintain your own notes for each problem.
@@ -39,61 +36,58 @@ A web-based flashcard application for practicing LeetCode problems, built with v
 ## 🛠️ Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/MyFlashCards.git
-```
+   ```bash
+   git clone https://github.com/gsriram7/MyFlashCards.git
+   ```
 
 2. Navigate to the project directory:
-```bash
-cd MyFlashCards
-```
+   ```bash
+   cd MyFlashCards
+   ```
 
 3. Create your `problems.tsv` file in the root directory with the following format:
-```
-Leetcode Id  Name    Difficulty  Frequency   Link    Hardness rating   Answer  Complexity
-1249    Minimum Remove to Make Valid Parentheses Medium  100.00% https://leetcode.com/problems/... 1   Stack solution    O(n)
-```
+   ```
+   Leetcode Id  Name    Difficulty  Frequency   Link    Hardness rating   Answer  Complexity
+   1249    Minimum Remove to Make Valid Parentheses Medium  100.00% https://leetcode.com/problems/... 1   Stack solution    O(n)
+   ```
 
 4. Start a local server. For example, using Python:
-```bash
-# Python 3
-python -m http.server 8000
-
-# Python 2
-python -m SimpleHTTPServer 8000
-```
+   ```bash
+   # Python 3
+   python -m http.server 8000
+   ```
 
 5. Open your browser and navigate to:
-```
-http://localhost:8000
-```
+   ```
+   http://localhost:8000
+   ```
 
 ## 📁 Project Structure
 
 ```
 MyFlashCards/
-│
 ├── index.html          # Main HTML file
-├── styles.css         # CSS styles
-├── app.js            # JavaScript functionality
-├── problems.tsv      # Problem database
-└── README.md         # Documentation
+├── styles.css          # CSS styles
+├── app.js              # JavaScript functionality
+├── problems.tsv        # Problem database
+├── documentation/      # Screenshots and additional documentation
+└── README.md           # Documentation
 ```
 
 ## 📝 TSV File Format
 
 The `problems.tsv` file should contain the following columns:
 
-| Column | Description |
-|--------|-------------|
-| Leetcode Id | Problem ID number |
-| Name | Problem title |
-| Difficulty | Easy/Medium/Hard |
-| Frequency | Problem frequency percentage |
-| Link | LeetCode problem URL |
-| Hardness rating | Personal difficulty rating (1-10) |
-| Answer | Solution approach |
-| Complexity | Time/Space complexity |
+| Column           | Description                                |
+|------------------|--------------------------------------------|
+| Leetcode Id      | Problem ID number                         |
+| Name             | Problem title                             |
+| Difficulty       | Easy/Medium/Hard                          |
+| Frequency        | Problem frequency percentage              |
+| Link             | LeetCode problem URL                      |
+| Hardness rating  | Personal difficulty rating (1-10)         |
+| Answer           | Solution approach                         |
+| Complexity       | Time/Space complexity                     |
 
 ## 🎯 Usage
 
@@ -116,7 +110,7 @@ The `problems.tsv` file should contain the following columns:
 
 ## 💾 Local Storage
 
-The application uses browser's localStorage to save:
+The application uses the browser's `localStorage` to save:
 - User progress
 - Personal notes
 - Favorites
@@ -126,6 +120,9 @@ The application uses browser's localStorage to save:
 
 Tested and working on:
 - Chrome
+- Firefox
+- Edge
+- Safari (add more if applicable)
 
 ## 🛠️ Customization
 
@@ -147,6 +144,6 @@ The application uses CSS variables for easy theme customization:
 }
 ```
 
-```
+### Adding Your Own Flashcards
 
-This README provides a comprehensive overview of your MyFlashCards project, including its features, setup instructions, and usage guidelines. It's concise yet informative, making it easy for users to understand and start using your application.
+Update the `problems.tsv` file with your custom problems in the specified format.
