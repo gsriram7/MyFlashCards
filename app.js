@@ -1,6 +1,5 @@
 console.log("app.js loaded");
 
-// Global variables
 let problems = [];
 let currentProblem = null;
 let timer = null;
@@ -9,8 +8,8 @@ let totalQuestions = 0;
 let currentQuestionIndex = 0;
 let currentFilters = {};
 let currentMode = 'random';
+let remainingProblems = [];
 
-// Initialize user progress
 let userProgress = JSON.parse(localStorage.getItem('userProgress')) || {
     correct: {},
     incorrect: {},
@@ -24,10 +23,9 @@ let userProgress = JSON.parse(localStorage.getItem('userProgress')) || {
     }
 };
 
-// Event Listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded");
-    loadProblems();
+    // loadProblems();
 });
 
 async function loadProblems() {
@@ -61,7 +59,6 @@ function parseTSV(tsv) {
 }
 
 function initializeEventListeners() {
-    // Mode selection buttons
     document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             currentMode = btn.dataset.mode;
@@ -71,44 +68,27 @@ function initializeEventListeners() {
         });
     });
 
-    // Custom mode button
     document.querySelector('.customize-btn').addEventListener('click', showCustomizeForm);
-    
-    // Favorites button
     document.querySelector('.favorites-btn').addEventListener('click', showFavorites);
-    
-    // Report button
     document.querySelector('.report-btn').addEventListener('click', showReport);
-    
-    // Flashcard
     document.querySelector('.flashcard').addEventListener('click', flipCard);
-    
-    // Notes section - prevent propagation
     document.querySelector('.notes-section').addEventListener('click', e => e.stopPropagation());
     
-    // Evaluation buttons
     document.querySelectorAll('.evaluation-buttons button').forEach(btn => {
         btn.addEventListener('click', () => evaluateAnswer(btn.className.split(' ')[0]));
     });
     
-    // Menu buttons
     document.querySelectorAll('.menu-button').forEach(btn => {
         btn.addEventListener('click', returnToMenu);
     });
     
-    // Timer toggle
     document.getElementById('timer-toggle').addEventListener('click', toggleTimer);
-    
-    // Save notes button
     document.querySelector('.save-notes-btn').addEventListener('click', saveNotes);
-    
-    // Favorite button
     document.querySelector('.favorite-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite();
     });
 
-    // Custom form buttons
     document.getElementById('start-custom')?.addEventListener('click', () => {
         const filters = {
             difficulty: Array.from(document.getElementById('custom-difficulty').selectedOptions).map(opt => opt.value),
@@ -121,7 +101,6 @@ function initializeEventListeners() {
 
     document.getElementById('cancel-custom')?.addEventListener('click', returnToMenu);
 
-    // Search with debounce
     const searchInput = document.getElementById('search');
     let debounceTimeout;
     searchInput.addEventListener('input', (e) => {
@@ -144,7 +123,6 @@ function initializeEventListeners() {
         }, 300);
     });
 
-    // Click outside search results to close
     document.addEventListener('click', (e) => {
         const resultsContainer = document.getElementById('autocomplete-results');
         const searchContainer = document.querySelector('.search-container');
@@ -152,6 +130,125 @@ function initializeEventListeners() {
             resultsContainer.classList.add('hidden');
         }
     });
+}
+
+function shuffle(array) {
+    let shuffledArray = [...array]; // Create a copy before shuffling
+    let currentIndex = shuffledArray.length;
+    
+    while (currentIndex != 0) {
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [shuffledArray[currentIndex], shuffledArray[randomIndex]] = 
+            [shuffledArray[randomIndex], shuffledArray[currentIndex]];
+    }
+    
+    return shuffledArray;
+}
+
+function startMode(mode, customFilters = null) {
+    currentMode = mode;
+    currentFilters = customFilters || {};
+    currentQuestionIndex = 0;
+    let filteredProblems;
+
+    switch(mode) {
+        case 'random':
+            filteredProblems = shuffle([...problems]);
+            break;
+        case 'mistakes':
+            filteredProblems = shuffle([...problems.filter(p => userProgress.incorrect[p['Leetcode Id']] > 0)]);
+            break;
+        case 'custom':
+            filteredProblems = shuffle([...filterProblems(problems, currentFilters)]);
+            break;
+        case 'single':
+            filteredProblems = [currentProblem];
+            break;
+    }
+
+    if (filteredProblems.length === 0) {
+        showToast("No problems match the selected criteria", "error");
+        return;
+    }
+
+    remainingProblems = filteredProblems;
+    totalQuestions = filteredProblems.length;
+    
+    document.getElementById('landing-page').classList.add('hidden');
+    document.getElementById('flashcard-container').classList.remove('hidden');
+    
+    updateProgress();
+    showNextProblem();
+}
+
+function startCustomMode(filters) {
+    let filteredProblems = [...problems];
+    
+    if (filters.difficulty.length > 0) {
+        filteredProblems = filteredProblems.filter(p => filters.difficulty.includes(p.Difficulty));
+    }
+    
+    if (filters.minFrequency) {
+        filteredProblems = filteredProblems.filter(p => 
+            parseFloat(p.Frequency) >= parseFloat(filters.minFrequency));
+    }
+    
+    if (filters.maxHardness) {
+        filteredProblems = filteredProblems.filter(p => 
+            parseInt(p['Hardness rating']) <= parseInt(filters.maxHardness));
+    }
+    
+    startMode('custom', { filteredProblems });
+}
+
+function filterProblems(problems, filters) {
+    if (filters.filteredProblems) {
+        return filters.filteredProblems;
+    }
+    return problems;
+}
+
+function showNextProblem() {
+    console.log(`showNextProblem: remaining ${remainingProblems.length}`)
+    console.log(`showNextProblem:currentQuestionIndex ${currentQuestionIndex}`)
+    if (currentQuestionIndex >= remainingProblems.length) {
+        if (confirm('You\'ve completed all questions! Would you like to continue with a new set?')) {
+            startMode(currentMode, currentFilters);
+        } else {
+            returnToMenu();
+        }
+        return;
+    }
+
+    clearInterval(timer);
+    displayNextProblem();
+}
+
+function displayNextProblem() {
+    console.log(`displayNextProblem BEFORE: currentQuestionIndex ${currentQuestionIndex}`);
+    currentProblem = remainingProblems[currentQuestionIndex];
+    displayProblem(currentProblem);
+    updateProgress();
+    console.log(`displayNextProblem AFTER: currentQuestionIndex ${currentQuestionIndex}`);
+}
+
+
+function displayProblem(problem) {
+    document.getElementById('problem-name').textContent = problem.Name;
+    document.getElementById('problem-link').href = problem.Link;
+    document.getElementById('answer').textContent = problem.Answer;
+    document.getElementById('complexity').textContent = problem.Complexity;
+    document.getElementById('freq').textContent = problem.Frequency;
+    document.getElementById('hardness-rating').textContent = problem['Hardness rating'];
+    
+    document.getElementById('problem-notes').value = userProgress.notes[problem['Leetcode Id']] || '';
+    
+    updateFavoriteButton(problem['Leetcode Id']);
+    
+    document.querySelector('.flashcard').classList.remove('flipped');
+    resetTimer();
+    startTimer();
 }
 
 function displaySearchResults(matches, container) {
@@ -182,155 +279,35 @@ function displaySearchResults(matches, container) {
     });
 }
 
-function startMode(mode, customFilters = null) {
-    currentMode = mode;
-    currentFilters = customFilters || {};
-    let filteredProblems = problems;
-
-    switch(mode) {
-        case 'random':
-            break;
-        case 'mistakes':
-            filteredProblems = problems.filter(p => userProgress.incorrect[p['Leetcode Id']] > 0);
-            break;
-        case 'custom':
-            filteredProblems = filterProblems(problems, currentFilters);
-            break;
-        case 'single':
-            filteredProblems = [currentProblem];
-            break;
-    }
-
-    if (filteredProblems.length === 0) {
-        showToast("No problems match the selected criteria", "error");
-        return;
-    }
-
-    totalQuestions = filteredProblems.length;
-    currentQuestionIndex = 0;
-    
-    document.getElementById('landing-page').classList.add('hidden');
-    document.getElementById('flashcard-container').classList.remove('hidden');
-    
-    updateProgress();
-    showRandomProblem(filteredProblems);
-}
-
-function startCustomMode(filters) {
-    let filteredProblems = [...problems];
-    
-    if (filters.difficulty.length > 0) {
-        filteredProblems = filteredProblems.filter(p => filters.difficulty.includes(p.Difficulty));
-    }
-    
-    if (filters.minFrequency) {
-        filteredProblems = filteredProblems.filter(p => 
-            parseFloat(p.Frequency) >= parseFloat(filters.minFrequency));
-    }
-    
-    if (filters.maxHardness) {
-        filteredProblems = filteredProblems.filter(p => 
-            parseInt(p['Hardness rating']) <= parseInt(filters.maxHardness));
-    }
-    
-    startMode('custom', { filteredProblems });
-}
-
-function filterProblems(problems, filters) {
-    if (filters.filteredProblems) {
-        return filters.filteredProblems;
-    }
-    return problems;
-}
-
-function showRandomProblem(filteredProblems) {
-    if (filteredProblems.length === 0) {
-        showToast('No problems match the selected filters', 'error');
-        returnToMenu();
-        return;
-    }
-    
-    const randomIndex = Math.floor(Math.random() * filteredProblems.length);
-    currentProblem = filteredProblems[randomIndex];
-    displayProblem(currentProblem);
-}
-
-function displayProblem(problem) {
-    document.getElementById('problem-name').textContent = problem.Name;
-    document.getElementById('problem-link').href = problem.Link;
-    document.getElementById('answer').textContent = problem.Answer;
-    document.getElementById('complexity').textContent = problem.Complexity;
-    document.getElementById('freq').textContent = problem.Frequency;
-    document.getElementById('hardness-rating').textContent = problem['Hardness rating'];
-    
-    // Load saved notes
-    document.getElementById('problem-notes').value = userProgress.notes[problem['Leetcode Id']] || '';
-    
-    // Update favorite status
-    updateFavoriteButton();
-    
-    // Reset card to front side
-    document.querySelector('.flashcard').classList.remove('flipped');
-
-    // Reset and start timer automatically
-    resetTimer();
-    startTimer();
-}
-
 function flipCard() {
     document.querySelector('.flashcard').classList.toggle('flipped');
 }
 
 function evaluateAnswer(result) {
+    console.log(`evaluateAnswer BEFORE: currentQuestionIndex ${currentQuestionIndex}`);
     const problemId = currentProblem['Leetcode Id'];
     
     if (result === 'easy') {
         userProgress.correct[problemId] = (userProgress.correct[problemId] || 0) + 1;
         userProgress.stats.correctStreak++;
         userProgress.stats.longestStreak = Math.max(userProgress.stats.longestStreak, userProgress.stats.correctStreak);
-        showToast('Great job! Problem marked as understood.', 'success');
     } else if (result === 'medium') {
         userProgress.stats.correctStreak = 0;
-        showToast('Problem marked for practice.', 'warning');
     } else {
         userProgress.incorrect[problemId] = (userProgress.incorrect[problemId] || 0) + 1;
         userProgress.stats.correctStreak = 0;
-        showToast('Problem added to review list.', 'error');
     }
     
     userProgress.lastSeen[problemId] = new Date().toISOString();
     userProgress.stats.totalSeen++;
-    
     currentQuestionIndex++;
-    updateProgress();
+    console.log(`evaluateAnswer AFTER increment: currentQuestionIndex ${currentQuestionIndex}`);
     
     saveProgress();
+    updateProgress();
     showNextProblem();
+    console.log(`evaluateAnswer END: currentQuestionIndex ${currentQuestionIndex}`);
 }
-
-function showNextProblem() {
-    // Stop current timer
-    clearInterval(timer);
-    
-    if (currentQuestionIndex >= totalQuestions) {
-        // Reset the counter and refresh the list
-        currentQuestionIndex = 0;
-        updateProgress();
-        
-        // Show completion message with option to continue
-        if (confirm('You\'ve completed all questions! Would you like to continue with a new set?')) {
-            startMode(currentMode, currentFilters);
-        } else {
-            returnToMenu();
-        }
-    } else {
-        const filteredProblems = currentMode === 'mistakes' ? 
-            problems.filter(p => userProgress.incorrect[p['Leetcode Id']] > 0) :
-            filterProblems(problems, currentFilters);
-        showRandomProblem(filteredProblems);
-    }
-}
-
 function toggleTimer() {
     if (timerRunning) {
         stopTimer();
@@ -365,8 +342,11 @@ function resetTimer() {
     timerRunning = true;
 }
 
+let favoriteLock = false; // Prevent rapid toggling
+
 function toggleFavorite() {
-    if (!currentProblem) return;
+    if (!currentProblem || favoriteLock) return;
+    favoriteLock = true; // Lock the function temporarily
     
     const problemId = currentProblem['Leetcode Id'];
     if (!userProgress.favorites) {
@@ -382,28 +362,36 @@ function toggleFavorite() {
         showToast('Added to favorites', 'success');
     }
     
-    updateFavoriteButton();
+    updateFavoriteButton(problemId);
     saveProgress();
+
+    // Release the lock after a short delay
+    setTimeout(() => {
+        favoriteLock = false;
+    }, 300);
 }
 
-function updateFavoriteButton() {
+function updateFavoriteButton(pid) {
     const starIcon = document.querySelector('.favorite-btn i');
     if (!starIcon || !currentProblem) return;
     
-    starIcon.className = userProgress.favorites.includes(currentProblem['Leetcode Id']) ? 
+    starIcon.className = userProgress.favorites.includes(pid) ? 
         'fas fa-star' : 'far fa-star';
 }
 
 function showFavorites() {
-    userProgress.favorites = userProgress.favorites || [];
-    const favoritedProblems = problems.filter(p => userProgress.favorites.includes(p['Leetcode Id']));
-    
-    if (favoritedProblems.length === 0) {
+    if (!userProgress.favorites || userProgress.favorites.length === 0) {
         showToast('No favorite problems found. Click the star icon on problems to add them to favorites.', 'warning');
         return;
     }
     
-    startMode('random', { filteredProblems: favoritedProblems });
+    const favoritedProblems = problems.filter(p => userProgress.favorites.includes(p['Leetcode Id']));
+    if (favoritedProblems.length === 0) {
+        showToast('No favorite problems found', 'warning');
+        return;
+    }
+    
+    startMode('custom', { filteredProblems: favoritedProblems });
 }
 
 function showCustomizeForm() {
@@ -427,7 +415,7 @@ function updateProgress() {
     const percentage = (currentQuestionIndex / totalQuestions) * 100;
     
     progressFill.style.width = `${percentage}%`;
-    progressText.textContent = `${currentQuestionIndex} / ${totalQuestions} Questions`;
+    progressText.textContent = `${currentQuestionIndex + 1} / ${totalQuestions} Questions`;
 }
 
 function showReport() {
@@ -441,7 +429,7 @@ function showReport() {
         incorrect: Object.keys(userProgress.incorrect).length,
         streak: userProgress.stats.correctStreak,
         longestStreak: userProgress.stats.longestStreak,
-        favorites: userProgress.favorites.length
+        favorites: userProgress.favorites ? userProgress.favorites.length : 0
     };
     
     document.getElementById('stats-container').innerHTML = `
@@ -485,5 +473,4 @@ function updateUIWithUserProgress() {
     // Initialize any UI elements that depend on user progress
 }
 
-// Initialize the app
 loadProblems();
