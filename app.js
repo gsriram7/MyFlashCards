@@ -249,9 +249,17 @@ function showRandomProblem(filteredProblems) {
         returnToMenu();
         return;
     }
-    
-    const randomIndex = Math.floor(Math.random() * filteredProblems.length);
-    currentProblem = filteredProblems[randomIndex];
+
+    // Shuffle the filteredProblems at the start of the session
+    if (!this.shuffledProblems || this.shuffledProblems.length === 0) {
+        this.shuffledProblems = [...filteredProblems].sort(() => Math.random() - 0.5);
+        this.currentIndex = 0;
+    }
+
+    // Get the next problem in the shuffled list
+    currentProblem = this.shuffledProblems[this.currentIndex];
+    this.currentIndex = (this.currentIndex + 1) % this.shuffledProblems.length;
+
     displayProblem(currentProblem);
 }
 
@@ -365,8 +373,11 @@ function resetTimer() {
     timerRunning = true;
 }
 
+let favoriteLock = false; // Prevent rapid toggling
+
 function toggleFavorite() {
-    if (!currentProblem) return;
+    if (!currentProblem || favoriteLock) return;
+    favoriteLock = true; // Lock the function temporarily
     
     const problemId = currentProblem['Leetcode Id'];
     if (!userProgress.favorites) {
@@ -384,6 +395,11 @@ function toggleFavorite() {
     
     updateFavoriteButton();
     saveProgress();
+
+    // Release the lock after a short delay
+    setTimeout(() => {
+        favoriteLock = false;
+    }, 300);
 }
 
 function updateFavoriteButton() {
