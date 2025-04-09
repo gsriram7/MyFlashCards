@@ -230,12 +230,6 @@ h1 {
     gap: 10px;
 }
 
-/* Make the timer smaller */
-#timer-container {
-    font-size: 0.8em; /* Reduce the font size of the timer */
-    margin-bottom: 10px;
-}
-
 #timer-display {
     font-size: 1.2em;
     font-weight: bold;
@@ -285,18 +279,13 @@ h1 {
     perspective: 1000px;
 }
 
-/* Adjust flashcard to occupy more screen space */
 .flashcard {
-    width: 90%; /* Increase width of the flashcard */
-    height: 70vh; /* Increase height to 70% of viewport height */
-    margin: 10px auto; /* Center the flashcard */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2em; /* Adjust text size for better readability */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    background-color: #f8f9fa;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
 }
 
 .flashcard.flipped {
@@ -462,13 +451,6 @@ h1 {
     box-shadow: 0 4px 8px var(--shadow-color);
 }
 
-/* Reduce size of evaluation buttons */
-.evaluation-buttons button {
-    font-size: 0.9em; /* Reduce font size */
-    padding: 8px 12px; /* Adjust padding for smaller buttons */
-    margin: 5px; /* Add space between buttons */
-}
-
 /* Menu Button */
 .menu-button {
     display: flex;
@@ -559,17 +541,8 @@ h1 {
     }
 
     .evaluation-buttons button {
-        font-size: 0.8em; /* Further reduce button size on small screens */
-        padding: 6px 10px;
-    }
-
-    .flashcard {
-        height: 80vh; /* Make flashcard taller on smaller devices */
-        font-size: 1em; /* Adjust text size for better fit */
-    }
-
-    #timer-container {
-        font-size: 0.7em; /* Further reduce timer size */
+        padding: 10px;
+        font-size: 14px;
     }
 }
 
