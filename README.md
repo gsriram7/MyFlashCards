@@ -2,6 +2,8 @@
 
 A web-based flashcard application for practicing LeetCode problems, built with vanilla JavaScript. Study, track progress, and maintain your own notes for each problem.
 
+URL: https://gsriram7.github.io/MyFlashCards/
+
 ## 🚀 Features
 
 - **Multiple Study Modes**
