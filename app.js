@@ -93,7 +93,7 @@ function initializeEventListeners() {
         const filters = {
             difficulty: Array.from(document.getElementById('custom-difficulty').selectedOptions).map(opt => opt.value),
             minFrequency: document.getElementById('custom-frequency').value,
-            maxHardness: document.getElementById('custom-hardness').value
+            hardnessRange: document.getElementById('custom-hardness').value
         };
         document.getElementById('custom-form-container').classList.add('hidden');
         startCustomMode(filters);
@@ -194,9 +194,12 @@ function startCustomMode(filters) {
             parseFloat(p.Frequency) >= parseFloat(filters.minFrequency));
     }
     
-    if (filters.maxHardness) {
-        filteredProblems = filteredProblems.filter(p => 
-            parseInt(p['Hardness rating']) <= parseInt(filters.maxHardness));
+    if (filters.hardnessRange) {
+        const [min, max] = filters.hardnessRange.split('-').map(Number);
+        filteredProblems = filteredProblems.filter(p => {
+            const rating = parseInt(p['Hardness rating']);
+            return rating >= min && rating <= max;
+        });
     }
     
     startMode('custom', { filteredProblems });
